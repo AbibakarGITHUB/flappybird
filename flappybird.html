@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enkel Flappy Bird</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        #game {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: lightblue;
+        }
+
+        #bird {
+            position: absolute;
+            background-color: rgb(60, 6, 255);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            left: 50px;
+            top: 50%;
+        }
+
+        #block {
+            position: absolute;
+            background-color: black;
+            width: 50px;
+            height: 150px;
+            right: 0;
+            top: 50%;
+        }
+
+        #score {
+           padding: 50px;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            color: rgb(215, 0, 0);
+            display: flex;
+            flex-direction: center;
+            justify-content: center;
+            justify-items: center;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: bold;
+            font-size: 200px;
+
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game">
+    <div id="bird"></div>
+    <div id="block"></div>
+    <div id="score">Score: 0</div>
+</div>
+
+<button onclick="jump()">Hopp</button>
+
+<script>
+    const gameModel = {
+        birdY: window.innerHeight / 2,
+        birdVelocity: 0,
+        gravity: 0.5,
+        lift: -10,
+        blockX: window.innerWidth,
+        blockSpeed: 3,
+        gameOver: false,
+        score: 0, // Initialize score
+    };
+
+    const gameView = {
+        bird: document.getElementById('bird'),
+        block: document.getElementById('block'),
+        scoreDisplay: document.getElementById('score'),
+
+        updateBird() {
+            this.bird.style.top = gameModel.birdY + 'px';
+        },
+
+        updateBlock() {
+            this.block.style.left = gameModel.blockX + 'px';
+        },
+
+        updateScore() {
+            this.scoreDisplay.textContent = 'Score: ' + gameModel.score; // Update score display
+        }
+    };
+
+    const gameController = {
+        jump() {
+            if (!gameModel.gameOver) {
+                gameModel.birdVelocity = gameModel.lift;
+            }
+        },
+
+        update() {
+            if (gameModel.gameOver) return;
+
+            gameModel.birdVelocity += gameModel.gravity;
+            gameModel.birdY += gameModel.birdVelocity;
+
+            // Check if the bird hits the ground
+            if (gameModel.birdY + gameView.bird.offsetHeight >= window.innerHeight) {
+                gameModel.birdY = window.innerHeight - gameView.bird.offsetHeight;
+                gameModel.birdVelocity = 0;
+                this.gameOver();
+                return;
+            }
+
+            // Block movement
+            gameModel.blockX -= gameModel.blockSpeed;
+
+            // Check if the block has passed the bird
+            if (gameModel.blockX + gameView.block.offsetWidth < 50) { // 50 is the left position of the bird
+                gameModel.score++; // Increment score
+                gameView.updateScore(); // Update score display
+                gameModel.blockX = window.innerWidth; // Reset block position
+            }
+
+            if (gameModel.blockX < -gameView.block.offsetWidth) {
+                gameModel.blockX = window.innerWidth;
+            }
+
+            gameView.updateBird();
+            gameView.updateBlock();
+
+            if (this.checkCollision()) {
+                this.gameOver();
+            }
+        },
+
+        gameOver() {
+            alert("Spillet er over");
+            gameModel.gameOver = true;
+            this.reset();
+        },
+
+        checkCollision() {
+            const birdRect = gameView.bird.getBoundingClientRect();
+            const blockRect = gameView.block.getBoundingClientRect();
+
+            return birdRect.right > blockRect.left &&
+                birdRect.left < blockRect.right &&
+                birdRect.bottom > blockRect.top &&
+                birdRect.top < blockRect.bottom;
+        },
+
+        reset() {
+            gameModel.birdY = window.innerHeight / 2;
+            gameModel.birdVelocity = 0;
+            gameModel.blockX = window.innerWidth;
+            gameModel.score = 0; // Reset score
+            gameView.updateScore(); // Update score display
+            gameModel.gameOver = false; // Reset game over status
+        },
+
+        startGame() {
+            setInterval(() => this.update(), 1000 / 60);
+        }
+    };
+
+    gameController.startGame();
+
+    function jump() {
+        gameController.jump();
+    }
+
+    // Add event listener for the space key
+    document.addEventListener('keydown', function(event) {
+        if (event.code === 'Space') {
+            jump();
+        }
+    });
+</script>
+
+</body>
+</html>
