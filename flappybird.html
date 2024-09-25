@@ -84,7 +84,7 @@
         blockX: window.innerWidth,
         blockSpeed: 3,
         gameOver: false,
-        score: 0, // Initialize score
+        score: 0, 
     };
 
     const gameView = {
@@ -101,7 +101,7 @@
         },
 
         updateScore() {
-            this.scoreDisplay.textContent = 'Score: ' + gameModel.score; // Update score display
+            this.scoreDisplay.textContent = 'Score: ' + gameModel.score; 
         }
     };
 
@@ -118,7 +118,7 @@
             gameModel.birdVelocity += gameModel.gravity;
             gameModel.birdY += gameModel.birdVelocity;
 
-            // Check if the bird hits the ground
+            
             if (gameModel.birdY + gameView.bird.offsetHeight >= window.innerHeight) {
                 gameModel.birdY = window.innerHeight - gameView.bird.offsetHeight;
                 gameModel.birdVelocity = 0;
@@ -126,14 +126,13 @@
                 return;
             }
 
-            // Block movement
+            
             gameModel.blockX -= gameModel.blockSpeed;
 
-            // Check if the block has passed the bird
-            if (gameModel.blockX + gameView.block.offsetWidth < 50) { // 50 is the left position of the bird
-                gameModel.score++; // Increment score
-                gameView.updateScore(); // Update score display
-                gameModel.blockX = window.innerWidth; // Reset block position
+            if (gameModel.blockX + gameView.block.offsetWidth < 50) { 
+                gameModel.score++; 
+                gameView.updateScore(); 
+                gameModel.blockX = window.innerWidth; 
             }
 
             if (gameModel.blockX < -gameView.block.offsetWidth) {
@@ -168,9 +167,9 @@
             gameModel.birdY = window.innerHeight / 2;
             gameModel.birdVelocity = 0;
             gameModel.blockX = window.innerWidth;
-            gameModel.score = 0; // Reset score
-            gameView.updateScore(); // Update score display
-            gameModel.gameOver = false; // Reset game over status
+            gameModel.score = 0;
+            gameView.updateScore(); 
+            gameModel.gameOver = false; 
         },
 
         startGame() {
@@ -184,7 +183,7 @@
         gameController.jump();
     }
 
-    // Add event listener for the space key
+
     document.addEventListener('keydown', function(event) {
         if (event.code === 'Space') {
             jump();
